@@ -7,10 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using StudentAdminPortal.API.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using StudentAdminPortal.API.Repositories;
 
 namespace StudentAdminPortal.API
 {
@@ -28,10 +31,15 @@ namespace StudentAdminPortal.API
         {
 
             services.AddControllers();
+            services.AddDbContext<StudentAdminContext>(options =>
+                            options.UseSqlServer(Configuration.GetConnectionString("StudentAdminPortalDb")));
+            services.AddScoped<IStudentRepository, SqlStudentRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentAdminPortal.API", Version = "v1" });
             });
+
+            services.AddAutoMapper(typeof(Startup).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
